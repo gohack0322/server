@@ -1,3 +1,4 @@
+import DetectRTC from '@/utils/detector'
 
     function preferCodecHelper(sdp, codec, info, ignore) {
         var preferCodecNumber = '';
@@ -77,7 +78,7 @@
             return sdp;
         }
 
-        if (typeof isFirefox !== 'undefined' && isFirefox) {
+        if (typeof DetectRTC.isFirefox !== 'undefined' && DetectRTC.isFirefox) {
             return sdp;
         }
 
@@ -235,6 +236,11 @@
         return sdp;
     }
 
+    function extractSdp (sdpLine, pattern) {
+        var result = sdpLine.match(pattern);
+        return (result && result.length == 2)? result[1]: null;
+      }
+
 export default {
     removeVPX: function (sdp) {
         var info = splitLines(sdp);
@@ -278,7 +284,8 @@ export default {
         });
     },
     removeNonG722: function (sdp) {
-        return sdp.replace(/m=audio ([0-9]+) RTP\/SAVPF ([0-9 ]*)/g, 'm=audio $1 RTP\/SAVPF 9');
+        // return sdp.replace(/m=audio ([0-9]+) RTP\/SAVPF ([0-9 ]*)/g, 'm=audio $1 RTP\/SAVPF 9');
+        return sdp;
     },
     setApplicationSpecificBandwidth: function(sdp, bandwidth, isScreen) {
         return setBAS(sdp, bandwidth, isScreen);
@@ -289,8 +296,8 @@ export default {
     setOpusAttributes: function(sdp, params) {
         return setOpusAttributes(sdp, params);
     },
-    preferVP9: function(sdp) {
-        return preferCodec(sdp, 'vp9');
+    preferVP9: sdp => {
+        return this.preferCodec(sdp, 'vp9');
     },
     preferCodec: function (sdp, codecName) {
         var info = splitLines(sdp);
@@ -318,13 +325,13 @@ export default {
     forceStereoAudio: function (sdp) {
         var sdpLines = sdp.split('\r\n');
         var fmtpLineIndex = null;
-        for (var i = 0; i < sdpLines.length; i++) {
+        for (let i = 0; i < sdpLines.length; i++) {
             if (sdpLines[i].search('opus/48000') !== -1) {
                 var opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
                 break;
             }
         }
-        for (var i = 0; i < sdpLines.length; i++) {
+        for (let i = 0; i < sdpLines.length; i++) {
             if (sdpLines[i].search('a=fmtp') !== -1) {
                 var payload = extractSdp(sdpLines[i], /a=fmtp:(\d+)/);
                 if (payload === opusPayload) {

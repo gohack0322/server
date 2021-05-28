@@ -1,13 +1,17 @@
 <template>
     <img alt="Vue logo" src="./assets/logo.png">
+    {{ character }}
+    {{ peers.getLength() }}
     <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
 <script>
+import { reactive } from 'vue'
 import { Client } from '@utils/socket'
 import HelloWorld from './components/HelloWorld.vue'
 
 console.log(Client)
+window.Client = Client
 
 export default {
     name: 'App',
@@ -15,26 +19,30 @@ export default {
         HelloWorld
     },
     setup() {
-        let id = random(100)
-        let level = random(100)
-        let map_id = 1
-
         const random = max => Math.floor(Math.random() * max)
 
-        Client.userid = id
-        Client.extra = {
+        let id = random(100)
+        const character = reactive({
             id: id,
-            level: level,
+            level: random(100),
             name: '',
             gender: '',
             avatar: '',
             image: '',
-            map_id: map_id,
+            map_id: 2,
             user_id: '',
             status: ''
-        }
+        })
+
+        Client.userid = id
+        Client.extra = character
         // Client.updateExtraData()
-        Client.openOrJoin(map_id, (param1,param2,param3) => console.log(param1,param2,param3))
+        Client.openOrJoin(character.map_id, (param1,param2,param3) => console.log(param1,param2,param3))
+
+        return {
+            character,
+            peers: Client.peers
+        }
     }
 }
 </script>

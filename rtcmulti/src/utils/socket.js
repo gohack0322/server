@@ -51,19 +51,106 @@ Client.sdpConstraints.mandatory = {
     OfferToReceiveVideo: true
 };
 
+// STAR_FIX_VIDEO_AUTO_PAUSE_ISSUES
+// via: https://github.com/muaz-khan/RTCMultiConnection/issues/778#issuecomment-524853468
+var bitrates = 512;
+var resolutions = 'Ultra-HD';
+var videoConstraints = {};
+
+if (resolutions == 'HD') {
+    videoConstraints = {
+        width: {
+            ideal: 1280
+        },
+        height: {
+            ideal: 720
+        },
+        frameRate: 30
+    };
+}
+
+if (resolutions == 'Ultra-HD') {
+    videoConstraints = {
+        width: {
+            ideal: 1920
+        },
+        height: {
+            ideal: 1080
+        },
+        frameRate: 30
+    };
+}
+
+Client.mediaConstraints = {
+    video: videoConstraints,
+    audio: true
+};
+
+var CodecsHandler = Client.CodecsHandler;
+
+Client.processSdp = function(sdp) {
+    var codecs = 'vp8';
+    
+    if (codecs.length) {
+        sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
+    }
+
+    if (resolutions == 'HD') {
+        sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
+            audio: 128,
+            video: bitrates,
+            screen: bitrates
+        });
+
+        sdp = CodecsHandler.setVideoBitrates(sdp, {
+            min: bitrates * 8 * 1024,
+            max: bitrates * 8 * 1024,
+        });
+    }
+
+    if (resolutions == 'Ultra-HD') {
+        sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
+            audio: 128,
+            video: bitrates,
+            screen: bitrates
+        });
+
+        sdp = CodecsHandler.setVideoBitrates(sdp, {
+            min: bitrates * 8 * 1024,
+            max: bitrates * 8 * 1024,
+        });
+    }
+
+    return sdp;
+};
+// END_FIX_VIDEO_AUTO_PAUSE_ISSUES
+
+// https://www.rtcmulticonnection.org/docs/iceServers/
+// use your own TURN-server here!
+Client.iceServers = [{
+    'urls': [
+        'stun:stun.l.google.com:19302',
+        'stun:stun1.l.google.com:19302',
+        'stun:stun2.l.google.com:19302',
+        'stun:stun.l.google.com:19302?transport=udp',
+    ]
+}];
+
 Client.onstream = event => {
     // let video = event.mediaElement
     console.log('RTC onsrteam', event)
 }
 
 Client.onopen = event => {
+    Client.onUserStatusChanged(event)
     console.log('onopen', event)
 }
 Client.onmessage = data => {
     emitter.emit(events.onSocketMessage, data)
     console.log('onmessage', data)
 }
-Client.onclose = event => {
+Client.onclose = Client.onerror = Client.onleave = event => {
+    Client.onUserStatusChanged(event)
     console.log('onclose', event)
 }
 // Client.openOrJoin('your-room-id', data => {

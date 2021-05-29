@@ -1,3 +1,4 @@
+import { getTracks, fireEvent } from '@/utils/client/globals'
 
     function handleType(type) {
         if (!type) {

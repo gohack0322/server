@@ -1,4 +1,4 @@
-
+import { getRandomString, removeNullEntries } from '@utils/client/globals'
 
 function setStreamType(constraints, stream) {
     if (constraints.mandatory && constraints.mandatory.chromeMediaSource) {

@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import { isData } from '@/utils/client/globals'
 
 export default class SocketConnection {
     constructor(rtcmulticonntection, connectCallback) {

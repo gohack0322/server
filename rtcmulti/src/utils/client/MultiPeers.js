@@ -4,6 +4,8 @@ import TextReceiver from '@/utils/client/text/receiver'
 import TextSender from '@/utils/client/text/sender'
 import { PeerInitiator } from '@/utils/client/RTCPeerConnection'
 import { isNull } from '@/utils/client/globals'
+import FileBufferReader from 'fbr'
+import DetectRTC from '@/utils/detector'
 
 export default class MultiPeers {
     constructor (connection) {

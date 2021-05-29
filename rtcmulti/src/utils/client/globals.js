@@ -1,13 +1,13 @@
-
+import DetectRTC from '@/utils/detector'
 
     if (typeof cordova !== 'undefined') {
-        Detector.isMobileDevice = true;
-        Detector.browser.name = 'Chrome';
+        DetectRTC.isMobileDevice = true;
+        DetectRTC.browser.name = 'Chrome';
     }
 
     if (navigator && navigator.userAgent && navigator.userAgent.indexOf('Crosswalk') !== -1) {
-        Detector.isMobileDevice = true;
-        Detector.browser.name = 'Chrome';
+        DetectRTC.isMobileDevice = true;
+        DetectRTC.browser.name = 'Chrome';
     }
 
     function fireEvent(obj, eventName, args) {
@@ -111,7 +111,7 @@
             isAudioOnly = true;
         }
 
-        if (Detector.browser.name === 'Firefox') {
+        if (DetectRTC.browser.name === 'Firefox') {
             if (connection.session.video || connection.session.screen) {
                 isAudioOnly = false;
             }
@@ -129,7 +129,7 @@
 
         // http://goo.gl/WZ5nFl
         // Firefox don't yet support onended for any stream (remote/local)
-        if (Detector.browser.name === 'Firefox') {
+        if (DetectRTC.browser.name === 'Firefox') {
             var streamEndedEvent = 'ended';
 
             if ('oninactive' in mediaElement) {
@@ -263,11 +263,11 @@
             return false;
         }
 
-        if (Detector.browser.name === 'Firefox' && audioPlusTab !== false) {
+        if (DetectRTC.browser.name === 'Firefox' && audioPlusTab !== false) {
             return true;
         }
 
-        if (Detector.browser.name !== 'Chrome' || Detector.browser.version < 50) return false;
+        if (DetectRTC.browser.name !== 'Chrome' || DetectRTC.browser.version < 50) return false;
 
         if (typeof audioPlusTab === true) {
             return true;
@@ -282,11 +282,11 @@
     }
 
     function getAudioScreenConstraints(screen_constraints) {
-        if (Detector.browser.name === 'Firefox') {
+        if (DetectRTC.browser.name === 'Firefox') {
             return true;
         }
 
-        if (Detector.browser.name !== 'Chrome') return false;
+        if (DetectRTC.browser.name !== 'Chrome') return false;
 
         return {
             mandatory: {
@@ -358,7 +358,11 @@
 
 export {
     getRandomString,
+    getRMCMediaElement,
+    removeNullEntries,
     listenEventHandler,
+    getTracks,
+    fireEvent,
     isData,
     isUnifiedPlanSupportedDefault,
     isNull,

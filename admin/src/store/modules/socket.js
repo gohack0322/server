@@ -27,7 +27,6 @@ const mutations = {
 
 const actions = {
     connect({ commit }, credential) {
-        console.log(credential)
         let socket = io.connect('https://localhost:9001/', {query:"userid=admin&adminUserName=" + credential.username + "&adminPassword=" + credential.password})
 
         commit('init', socket)

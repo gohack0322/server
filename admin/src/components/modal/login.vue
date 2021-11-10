@@ -28,8 +28,8 @@ export default {
     name: 'Login',
     setup() {
         const store = useStore()
-        const username = ref('username')
-        const password = ref('password')
+        const username = ref('')
+        const password = ref('')
 
         const onLogin = event => {
             event.target.disabled = true

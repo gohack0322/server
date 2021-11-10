@@ -27,7 +27,7 @@ const mutations = {
 
 const actions = {
     connect({ commit }, credential) {
-        let socket = io.connect('https://localhost:9001/', {query:"userid=admin&adminUserName=" + credential.username + "&adminPassword=" + credential.password})
+        let socket = io.connect(process.env.NODE_ENV == 'production' ? 'https://www.cybllusion.com:9001/' : 'https://localhost:9001/', {query:"userid=admin&adminUserName=" + credential.username + "&adminPassword=" + credential.password})
 
         commit('init', socket)
 

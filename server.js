@@ -7,10 +7,10 @@ const url = require('url');
 var httpServer = require('http');
 
 const ioServer = require('socket.io');
-const RTCMultiConnectionServer = require('rtcmulticonnection-server');
+const RTCMultiConnectionServer = require('./src/');
 
 var PORT = 9001;
-var isUseHTTPs = false;
+var isUseHTTPs = true;
 
 const jsonPath = {
     config: 'config.json',
@@ -24,6 +24,7 @@ const resolveURL = RTCMultiConnectionServer.resolveURL;
 
 var config = getValuesFromConfigJson(jsonPath);
 config = getBashParameters(config, BASH_COLORS_HELPER);
+config.logs = jsonPath.logs
 
 // if user didn't modifed "PORT" object
 // then read value from "config.json"
@@ -98,17 +99,10 @@ function serverHandler(request, response) {
             }
         });
 
-        if (filename.search(/.js|.json/g) !== -1 && !matched) {
-            try {
-                response.writeHead(404, {
-                    'Content-Type': 'text/plain'
-                });
-                response.write('404 Not Found: ' + path.join('/', uri) + '\n');
-                response.end();
-                return;
-            } catch (e) {
-                pushLogs(config, '404 Not Found', e);
-            }
+        if (filename.search(/.js|.json|css|img/g) !== -1 && !matched) {
+            filename = filename.replace('/js/', '/admin/dist/js/');
+            filename = filename.replace('/css/', '/admin/dist/css/');
+            filename = filename.replace('/img/', '/admin/dist/img/');
         }
 
         ['Video-Broadcasting', 'Screen-Sharing', 'Switch-Cameras'].forEach(function(fname) {
@@ -157,7 +151,7 @@ function serverHandler(request, response) {
                     filename += resolveURL('/demos/MultiRTC/index.html');
                 } else if (filename.indexOf(resolveURL('/admin/')) !== -1) {
                     filename = filename.replace(resolveURL('/admin/'), '');
-                    filename += resolveURL('/admin/index.html');
+                    filename += resolveURL('/admin/dist/index.html');
                 } else if (filename.indexOf(resolveURL('/demos/dashboard/')) !== -1) {
                     filename = filename.replace(resolveURL('/demos/dashboard/'), '');
                     filename += resolveURL('/demos/dashboard/index.html');

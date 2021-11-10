@@ -53,6 +53,7 @@
     "fbr": "latest",
     "getstats": "latest",
     "multistreamsmixer": "latest",
+    "mysql": "github:mysqljs/mysql",
     "recordrtc": "latest",
     "rtcmulticonnection-server": "latest",
     "socket.io": "latest",

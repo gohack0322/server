@@ -3,7 +3,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>編號</th>
+                <th>ID</th>
                 <th>User ID</th>
                 <th>地圖</th>
                 <th>名稱</th>

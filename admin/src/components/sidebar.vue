@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse pt-3">
         <ul class="list-unstyled ps-0">
             <li class="mb-1">
                 <router-link :to="{ name: 'maps' }">Maps</router-link>

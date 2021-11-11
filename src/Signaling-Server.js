@@ -18,6 +18,10 @@ var CONST_STRINGS = require('./CONST_STRINGS.js');
 
 var isAdminAuthorized = require('./verify-admin.js');
 
+var Mailletter = require('./admin/mailletter.js')
+
+var CONSTANT = require('./const.js')
+
 module.exports = exports = function(socket, config) {
     config = config || {};
 
@@ -217,6 +221,30 @@ module.exports = exports = function(socket, config) {
                     pushLogs(config, 'deleteRoom', e);
                     callback(false);
                 }
+            }
+
+            switch(message.type)
+            {
+                case CONSTANT.SOCKET.TYPES.MAILLETTER:
+                    try {
+                        var user = listOfUsers[message.user_id];
+                        if (user) {
+                            Mailletter.create('user-1', `character-${message.character_id}`, message.signature, message.title, message.content)
+                                .then(data => {
+                                    user.socket.emit(user.socketCustomEvent, {
+                                        type: CONSTANT.SOCKET.TYPES.MAILLETTER,
+                                        id: data.insertId
+                                    })
+                                })
+                                .catah(err => pushLogs(config, CONSTANT.SOCKET.TYPES.MAILLETTER, err))
+                        } else {
+                            pushLogs(config, CONSTANT.SOCKET.TYPES.MAILLETTER + '-user not find', e);
+                        }
+                    } catch (e) {
+                        pushLogs(config, CONSTANT.SOCKET.TYPES.MAILLETTER, e);
+                        callback(false);
+                    }
+                    break;
             }
         });
     }

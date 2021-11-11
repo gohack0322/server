@@ -4,8 +4,8 @@
 </template>
 
 <script>
-import Login from './components/modal/login.vue'
-import Layout from './Layout.vue'
+import Login from '@/components/modal/login.vue'
+import Layout from '@/Layout.vue'
 import { ModalsContainer } from 'vue-final-modal'
 import { inject, onBeforeMount, onBeforeUnmount } from '@vue/runtime-core'
 import { emitter, events } from "@/utils/event"

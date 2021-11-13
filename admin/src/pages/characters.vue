@@ -10,6 +10,7 @@
                 <th>等級</th>
                 <th>性別</th>
                 <th>狀態</th>
+                <th>Mail</th>
             </tr>
         </thead>
         <tbody>
@@ -22,23 +23,34 @@
                     <td>{{ character.level }}</td>
                     <td>{{ character.gender }}</td>
                     <td>{{ character.status }}</td>
+                    <td>
+                        <button @click="onSend(character.id, character.user_id)">寄信</button>
+                    </td>
                 </tr>
             </template>
         </tbody>
     </table>
 </template>
 <script>
-import { computed } from '@vue/runtime-core'
+import Mailletter from '@/components/modal/mailletter.vue'
+import { computed, inject } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 
 export default {
     name: 'Characters',
     setup() {
         const store = useStore()
+        const $modal = inject('$vfm')
         const characters = computed(() => store.getters['socket/characters'])
 
+        const onSend = (character_id, user_id) => {
+            $modal.show({ component: Mailletter, bind: { signature: '線上GM', characterId: character_id, userId: user_id } })
+        }
+
         return {
-            characters
+            characters,
+
+            onSend
         }
     },
 }

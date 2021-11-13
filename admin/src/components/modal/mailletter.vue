@@ -7,19 +7,19 @@
             <div class="row">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="signature">署名</span>
-                    <input type="text" class="form-control" v-model="signature" aria-describedby="signature">
+                    <input type="text" class="form-control" v-model="_signature" aria-describedby="signature">
                 </div>
             </div>
             <div class="row">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="user_id">玩家ID</span>
-                    <input type="text" class="form-control" v-model="user_id" aria-describedby="user_id">
+                    <input type="text" class="form-control" :value="userId" aria-describedby="user_id" disabled>
                 </div>
             </div>
             <div class="row">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="character_id">角色ID</span>
-                    <input type="text" class="form-control" v-model="character_id" aria-describedby="character_id">
+                    <input type="text" class="form-control" :value="characterId" aria-describedby="character_id" disabled>
                 </div>
             </div>
             <div class="row">
@@ -34,6 +34,18 @@
                     <textarea class="form-control" v-model="content" aria-describedby="content" />
                 </div>
             </div>
+            <div class="row">
+                <span class="col-3 text-end">是否已讀</span>
+                <div class="col-9">
+                    <input class="form-check-input mt-0" style="vertical-align: text-top;" v-model="is_read" type="checkbox" value="">
+                </div>
+            </div>
+            <div class="row">
+                <span class="col-3 text-end">是否已通知</span>
+                <div class="col-9">
+                    <input class="form-check-input mt-0" style="vertical-align: text-top;" v-model="is_notify" type="checkbox" value="">
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-success w-50 mx-auto" @click="onSend">寄送</button><button class="btn btn-secondary w-50 mx-auto" @click="close">取消</button>
@@ -44,29 +56,55 @@
 <script>
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
+import { inject } from '@vue/runtime-core'
 
 export default {
     name: 'Mailletter',
-    setup() {
+    props: {
+        signature: {
+            type: String,
+            default: ''
+        },
+        characterId: {
+            type: Number,
+            default: 0
+        },
+        userId: {
+            type: Number,
+            default: 0
+        }
+    },
+    setup(props) {
+        const $modal = inject('$vfm')
         const store = useStore()
-        const user_id = ref(0)
-        const character_id = ref(0)
-        const signature = ref('')
+        const _signature = ref(props.signature)
         const title = ref('')
         const content = ref('')
+        const is_read = ref(false)
+        const is_notify = ref(false)
 
-        const onSend = () => {
-            // event.target.disabled = true
+        const onSend = event => {
+            event.target.disabled = true
 
-            store.dispatch('socket/mailletter', { signature: signature.value, user_id: user_id.value, character_id: character_id.value, title: title.value, content: content.value.replace(/\n\r?/g, '<br />') })
+            store.dispatch('socket/mailletter', {
+                    signature: _signature.value,
+                    user_id: props.userId,
+                    character_id: props.characterId,
+                    title: title.value,
+                    content: content.value.replace(/\n\r?/g, '<br />'),
+                    is_read: is_read.value,
+                    is_notify: is_notify.value
+                })
+
+            $modal.hide('mailletter')
         }
 
         return {
-            user_id,
-            character_id,
-            signature,
+            _signature,
             title,
             content,
+            is_read,
+            is_notify,
 
             onSend
         }
